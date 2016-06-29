@@ -21,8 +21,12 @@ class RedirectController extends Controller
     public function store(Request $request, UrlService $service)
     {
         $this->validate($request, [
-            'href' => 'required',
-            'hash' => 'unique:urls',
+            'href' => 'required|active_url',
+            'hash' => 'unique:urls|string',
+            'utm' => 'array',
+            'utm.source' => 'string',
+            'utm.medium' => 'required_with:utm.source|string',
+            'utm.campaign' => 'required_with:utm.source|string',
         ]);
 
         return $service->make($request);
@@ -36,7 +40,7 @@ class RedirectController extends Controller
      */
     public function redirect(UrlService $service, $hash)
     {
-        return redirect($service->find($hash)->href);
+        return redirect($service->find($hash)->redirect);
     }
 
     /**
