@@ -16,7 +16,7 @@ matrix:
     - php: hhvm
 
 install:
-  - composer install --prefer-dist --no-dev --optimize-autoloader --quiet
+  - composer install --prefer-dist --optimize-autoloader --quiet
 
 before_script:
   - mysql -e 'create database short;'
@@ -29,5 +29,4 @@ notifications:
     on_failure: always
 
 script:
-  - php artisan migrate
-  - phpunit -c phpunit.xml --coverage-text
+  - vendor/bin/phpunit --coverage-text
