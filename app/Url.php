@@ -35,7 +35,7 @@ class Url extends Model
     /**
      * @return mixed
      */
-    public function getRedirectAttribute() : string
+    public function getRedirectAttribute()
     {
         if ($this->attributes['utm']) {
             $utm = http_build_query($this->attributes['utm']);

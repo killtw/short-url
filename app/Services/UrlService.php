@@ -40,7 +40,7 @@ class UrlService
      *
      * @return Model
      */
-    public function make(Request $request) : Model
+    public function make(Request $request)
     {
         $model = $this->url->create([
             'href' => $request->input('href'),
@@ -64,7 +64,7 @@ class UrlService
      *
      * @return Url
      */
-    public function find(string $hash) : Url
+    public function find(string $hash)
     {
         return Cache::rememberForever($hash, function() use ($hash) {
             return $this->url->where('hash', $hash)->firstOrFail();

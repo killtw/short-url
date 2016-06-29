@@ -29,7 +29,7 @@ class HashidsService
      *
      * @return string
      */
-    public function make(int $ids) : string
+    public function make(int $ids)
     {
         return $this->hashids->encode($ids);
     }
@@ -39,7 +39,7 @@ class HashidsService
      *
      * @return array
      */
-    public function decode(string $hash) : array
+    public function decode(string $hash)
     {
         return $this->hashids->decode($hash);
     }
