@@ -4,6 +4,11 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Class Url
+ *
+ * @package App
+ */
 class Url extends Model
 {
     /**
@@ -26,4 +31,25 @@ class Url extends Model
         'hash' => 'string',
         'utm' => 'object',
     ];
+
+    /**
+     * @return mixed
+     */
+    public function getRedirectAttribute() : string
+    {
+        if ($this->attributes['utm']) {
+            $utm = http_build_query($this->attributes['utm']);
+
+            /** @var \Illuminate\Support\Collection $url */
+            $url = collect(parse_url($this->attributes['href']));
+
+            if (! $url->has('query')) {
+                return http_build_url($url->put('query', $utm)->toArray());
+            };
+
+            return http_build_url($url->put('query', "{$url->get('query')}&$utm")->toArray());
+        }
+
+        return $this->attributes['href'];
+    }
 }
