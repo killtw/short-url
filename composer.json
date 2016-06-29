@@ -10,7 +10,8 @@
         "vlucas/phpdotenv": "~2.2",
         "hashids/hashids": "^1.0",
         "predis/predis": "^1.1",
-        "illuminate/redis": "^5.2"
+        "illuminate/redis": "^5.2",
+        "jakeasmith/http_build_url": "^1"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
