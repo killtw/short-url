@@ -12,6 +12,18 @@ class Url extends Model
      * @var array
      */
     protected $fillable = [
-        'href', 'hash',
+        'href', 'hash', 'utm',
+    ];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'id' => 'integer',
+        'href' => 'string',
+        'hash' => 'string',
+        'utm' => 'object',
     ];
 }
