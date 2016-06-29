@@ -64,7 +64,7 @@ class UrlService
      *
      * @return Url
      */
-    public function find(string $hash)
+    public function find($hash)
     {
         return Cache::rememberForever($hash, function() use ($hash) {
             return $this->url->where('hash', $hash)->firstOrFail();
