@@ -37,7 +37,7 @@ class RedirectControllerTest extends TestCase
             'hash' => 'test',
         ]);
 
-        $response = $this->json('POST', 'store', [
+        $this->json('POST', 'store', [
             'href' => 'http://test.com',
             'hash' => 'test',
         ])
@@ -56,6 +56,29 @@ class RedirectControllerTest extends TestCase
             ->seeJson([
                 'href' => 'http://test.com',
                 'hash' => 'test',
+            ]);
+    }
+
+    /** @test */
+    public function it_should_create_a_record_with_utm_meta()
+    {
+        $this->json('POST', 'store', [
+            'href' => 'http://test.com',
+            'hash' => 'test',
+            'utm' => [
+                'source' => 'facebook',
+                'medium' => 'ads',
+                'campaign' => 'posts',
+            ],
+        ])
+            ->seeJson([
+                'href' => 'http://test.com',
+                'hash' => 'test',
+                'utm' => [
+                    'utm_source' => 'facebook',
+                    'utm_medium' => 'ads',
+                    'utm_campaign' => 'posts',
+                ]
             ]);
     }
 }
