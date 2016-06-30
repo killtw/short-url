@@ -84,8 +84,6 @@ $app->singleton(
 $app->register(Illuminate\Redis\RedisServiceProvider::class);
 $app->register(Irazasyed\LaravelGAMP\LaravelGAMPServiceProvider::class);
 
-class_alias(Irazasyed\LaravelGAMP\Facades\GAMP::class, 'GAMP');
-
 /*
 |--------------------------------------------------------------------------
 | Load The Application Routes
