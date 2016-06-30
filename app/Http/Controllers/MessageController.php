@@ -27,17 +27,28 @@ class MessageController extends Controller
             $input->put('utm', compact('source', 'medium', 'campaign'));
         }
 
-        $response = json_decode(
-            app()->prepareResponse(
-                app()->handle($request->create(route('store'), 'POST', $input->toArray()))
-            )->getContent()
+        $response = app()->prepareResponse(
+            app()->handle($request->create(route('store'), 'POST', $input->toArray()))
         );
+        $json = json_decode($response->getContent());
+
+        if ($response->getStatusCode() === 422) {
+            return response()->json([
+                'response_type' => 'ephemeral',
+                'attachments' => [
+                    [
+                        'color' => 'danger',
+                        'title' => ':x: The hash has already been taken.',
+                    ],
+                ]
+            ]);
+        }
 
         return response()->json([
             'response_type' => 'ephemeral',
-            'text' => $response->url,
+            'text' => $json->url,
             'attachments' => [
-                ['text' => "Origin: $response->redirect",]
+                ['text' => "Origin: $json->redirect",]
             ]
         ]);
     }
