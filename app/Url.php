@@ -12,6 +12,13 @@ use Illuminate\Database\Eloquent\Model;
 class Url extends Model
 {
     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['url', 'redirect'];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array
@@ -33,7 +40,7 @@ class Url extends Model
     ];
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getRedirectAttribute()
     {
@@ -51,5 +58,13 @@ class Url extends Model
         }
 
         return $this->attributes['href'];
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrlAttribute()
+    {
+        return route('redirect', ['hash' => $this->attributes['hash']]);
     }
 }
