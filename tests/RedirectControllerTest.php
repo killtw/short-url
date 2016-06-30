@@ -81,4 +81,17 @@ class RedirectControllerTest extends TestCase
                 ]
             ]);
     }
+
+    /** @test */
+    public function it_should_redirect_to_correct_url()
+    {
+        $this->call('POST', 'store', [
+            'href' => 'http://test.com',
+            'hash' => 'test',
+        ]);
+
+        $this->get('test')
+            ->seeStatusCode(302)
+            ->assertEquals('http://test.com', $this->response->getTargetUrl());
+    }
 }
