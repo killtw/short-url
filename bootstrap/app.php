@@ -82,6 +82,9 @@ $app->singleton(
 // $app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
 $app->register(Illuminate\Redis\RedisServiceProvider::class);
+$app->register(Irazasyed\LaravelGAMP\LaravelGAMPServiceProvider::class);
+
+class_alias(Irazasyed\LaravelGAMP\Facades\GAMP::class, 'GAMP');
 
 /*
 |--------------------------------------------------------------------------
@@ -97,5 +100,11 @@ $app->register(Illuminate\Redis\RedisServiceProvider::class);
 $app->group(['namespace' => 'App\Http\Controllers'], function ($app) {
     require __DIR__.'/../app/Http/routes.php';
 });
+
+config([
+    'gamp' => [
+        'tracking_id' => env('GA_TRACKING_ID'),
+    ]
+]);
 
 return $app;
