@@ -38,7 +38,7 @@ class Url extends Model
     public function getRedirectAttribute()
     {
         if ($this->attributes['utm']) {
-            $utm = http_build_query($this->attributes['utm']);
+            $utm = http_build_query($this->utm);
 
             /** @var \Illuminate\Support\Collection $url */
             $url = collect(parse_url($this->attributes['href']));

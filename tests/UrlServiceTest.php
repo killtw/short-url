@@ -64,4 +64,30 @@ class UrlServiceTest extends TestCase
         // assert
         $this->assertEquals($expected, $actual);
     }
+
+    /** @test */
+    public function it_should_create_a_new_record_with_utm_meta()
+    {
+        // arrange
+        $target = app(\App\Services\UrlService::class);
+        $request = new \Illuminate\Http\Request([
+            'href' => 'http://test.com',
+            'hash' => 'test',
+            'utm' => [
+                'source' => 'facebook',
+                'medium' => 'ads',
+                'campaign' => 'posts',
+            ]
+        ]);
+
+        // act
+        $actual = $target->make($request);
+
+        // assert
+        $this->seeInDatabase('urls', ['href' => 'http://test.com']);
+        $this->assertEquals('http://test.com', $actual->href);
+        $this->seeInDatabase('urls', ['hash' => 'test']);
+        $this->assertEquals('test', $actual->hash);
+        $this->assertEquals(json_decode('{"utm_source":"facebook","utm_medium":"ads","utm_campaign":"posts"}'), $actual->utm);
+    }
 }
