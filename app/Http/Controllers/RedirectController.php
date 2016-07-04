@@ -47,10 +47,10 @@ class RedirectController extends Controller
      * @param UrlService $service
      * @param $hash
      *
-     * @return \App\Url
+     * @return array
      */
     public function decode(UrlService $service, $hash)
     {
-        return $service->find($hash);
+        return $service->decode($hash);
     }
 }

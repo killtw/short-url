@@ -7,6 +7,8 @@ use Cache;
 use Irazasyed\LaravelGAMP\Facades\GAMP;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Spatie\Analytics\AnalyticsFacade as Analytics;
+use Spatie\Analytics\Period;
 
 /**
  * Class UrlService
@@ -76,6 +78,30 @@ class UrlService
         return Cache::rememberForever($hash, function() use ($hash) {
             return $this->url->where('hash', $hash)->firstOrFail();
         });
+    }
+
+    public function decode($hash)
+    {
+        $url = Cache::rememberForever($hash, function() use ($hash) {
+            return $this->url->where('hash', $hash)->firstOrFail();
+        });
+        $request = Analytics::performQuery(Period::days(3650), 'ga:pageviews', [
+            'filters' => "ga:pagePath==/{$url->hash}",
+        ]);
+        $ga = collect($request->rows)->transform(function ($row) {
+            return [
+                'pageviews' => $row[0],
+            ];
+        })->flatten(1);
+
+        return [
+            'id' => $url->id,
+            'hash' => $url->hash,
+            'redirect' => $url->redirect,
+            'ga' => [
+                'pageviews' => $ga['pageviews']
+            ],
+        ];
     }
 
     /**
