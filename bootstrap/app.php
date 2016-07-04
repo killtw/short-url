@@ -48,6 +48,17 @@ $app->singleton(
     App\Console\Kernel::class
 );
 
+config([
+    'gamp' => [
+        'tracking_id' => env('GA_TRACKING_ID'),
+    ],
+    'laravel-analytics' => [
+        'view_id' => env('ANALYTICS_VIEW_ID'),
+        'service_account_credentials_json' => base_path('resources/laravel-analytics/service-account-credentials.json'),
+        'cache_lifetime_in_minutes' => 60 * 24,
+    ],
+]);
+
 /*
 |--------------------------------------------------------------------------
 | Register Middleware
@@ -82,7 +93,9 @@ $app->singleton(
 // $app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
 $app->register(Illuminate\Redis\RedisServiceProvider::class);
+$app->register(Irazasyed\Larasupport\Providers\ArtisanServiceProvider::class);
 $app->register(Irazasyed\LaravelGAMP\LaravelGAMPServiceProvider::class);
+$app->register(Spatie\Analytics\AnalyticsServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------
@@ -98,11 +111,5 @@ $app->register(Irazasyed\LaravelGAMP\LaravelGAMPServiceProvider::class);
 $app->group(['namespace' => 'App\Http\Controllers'], function ($app) {
     require __DIR__.'/../app/Http/routes.php';
 });
-
-config([
-    'gamp' => [
-        'tracking_id' => env('GA_TRACKING_ID'),
-    ]
-]);
 
 return $app;
