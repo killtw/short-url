@@ -45,21 +45,6 @@ class RedirectControllerTest extends TestCase
     }
 
     /** @test */
-    public function it_should_a_valid_json()
-    {
-        $this->call('POST', 'store', [
-            'href' => 'http://test.com',
-            'hash' => 'test',
-        ]);
-
-        $this->get('test+')
-            ->seeJsonContains([
-                'redirect' => 'http://test.com',
-                'hash' => 'test',
-            ]);
-    }
-
-    /** @test */
     public function it_should_create_a_record_with_utm_meta()
     {
         $this->json('POST', 'store', [

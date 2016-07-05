@@ -95,6 +95,7 @@ class UrlService
         $url = Cache::rememberForever($hash, function() use ($hash) {
             return $this->url->where('hash', $hash)->firstOrFail();
         });
+
         return collect([
             'id' => $url->id,
             'hash' => $url->hash,
