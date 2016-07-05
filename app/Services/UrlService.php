@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Url;
 use Cache;
+use Illuminate\Support\Collection;
 use Irazasyed\LaravelGAMP\Facades\GAMP;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -23,17 +24,23 @@ class UrlService
      * @var HashidsService
      */
     private $service;
+    /**
+     * @var AnalyticService
+     */
+    private $analytics;
 
     /**
      * UrlService constructor.
      *
      * @param Url $url
      * @param HashidsService $service
+     * @param AnalyticService $analytics
      */
-    public function __construct(Url $url, HashidsService $service)
+    public function __construct(Url $url, HashidsService $service, AnalyticService $analytics)
     {
         $this->url = $url;
         $this->service = $service;
+        $this->analytics = $analytics;
     }
 
     /**
@@ -76,6 +83,26 @@ class UrlService
         return Cache::rememberForever($hash, function() use ($hash) {
             return $this->url->where('hash', $hash)->firstOrFail();
         });
+    }
+
+    /**
+     * @param string $hash
+     *
+     * @return Collection
+     */
+    public function decode(string $hash)
+    {
+        $url = Cache::rememberForever($hash, function() use ($hash) {
+            return $this->url->where('hash', $hash)->firstOrFail();
+        });
+        return collect([
+            'id' => $url->id,
+            'hash' => $url->hash,
+            'redirect' => $url->redirect,
+            'ga' => [
+                'pageviews' => $this->analytics->getPageviews($hash)['pageviews']
+            ],
+        ]);
     }
 
     /**
