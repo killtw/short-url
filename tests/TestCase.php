@@ -11,4 +11,17 @@ class TestCase extends Laravel\Lumen\Testing\TestCase
     {
         return require __DIR__.'/../bootstrap/app.php';
     }
+
+    /**
+     * @param string $class
+     *
+     * @return \Mockery\Mock
+     */
+    public function initMockClass($class)
+    {
+        $mock = Mockery::mock($class);
+        $this->app->instance($class, $mock);
+
+        return $mock;
+    }
 }
