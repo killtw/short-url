@@ -94,4 +94,40 @@ class RedirectControllerTest extends TestCase
             ->seeStatusCode(302)
             ->assertEquals('http://test.com', $this->response->getTargetUrl());
     }
+
+    /** @test */
+    public function it_shoould_return_a_json_with_pageview()
+    {
+        $this->call('POST', 'store', [
+            'href' => 'http://test.com',
+            'hash' => 'test',
+        ]);
+
+        $this->initMockClass(\App\Services\AnalyticService::class)
+            ->shouldReceive('getPageviews')
+            ->once()
+            ->withArgs(['test'])
+            ->once()
+            ->andReturn(collect([
+                'pageviews' => 64
+            ]));
+
+        $this->get('test+')
+            ->seeJsonStructure([
+                'id',
+                'hash',
+                'redirect',
+                'ga' => [
+                    'pageviews',
+                ],
+            ])
+            ->seeJson([
+                'id' => 1,
+                'hash' => 'test',
+                'redirect' => 'http://test.com',
+                'ga' => [
+                    'pageviews' => 64
+                ],
+            ]);
+    }
 }
