@@ -3,11 +3,10 @@
 class AnalyticServiceTest extends TestCase
 {
     /** @test */
-    public function it_should_return_a_ga_data()
+    public function it_should_return_pageview()
     {
         // arrange
-        $mock = Mockery::mock(\App\Services\AnalyticService::class);
-        $this->app->instance(\App\Services\AnalyticService::class, $mock);
+        $mock = $this->initMockClass(\App\Services\AnalyticService::class);
         $mock->shouldReceive('getPageviews')
             ->once()
             ->withArgs(['test'])

@@ -47,6 +47,15 @@ class RedirectControllerTest extends TestCase
     /** @test */
     public function it_should_a_valid_json()
     {
+        $mock = $this->initMockClass(\App\Services\AnalyticService::class);
+        $mock->shouldReceive('getPageviews')
+            ->once()
+            ->withArgs(['test'])
+            ->once()
+            ->andReturn(collect([
+                'pageviews' => 64
+            ]));
+
         $this->call('POST', 'store', [
             'href' => 'http://test.com',
             'hash' => 'test',
@@ -54,8 +63,8 @@ class RedirectControllerTest extends TestCase
 
         $this->get('test+')
             ->seeJson([
-                'href' => 'http://test.com',
                 'hash' => 'test',
+                'redirect' => 'http://test.com',
             ]);
     }
 

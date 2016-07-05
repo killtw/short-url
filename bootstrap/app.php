@@ -24,6 +24,8 @@ $app = new Laravel\Lumen\Application(
 );
 
 $app->withFacades();
+//class_alias('Spatie\Analytics\AnalyticsFacade', 'Analytics');
+//class_alias('Irazasyed\LaravelGAMP\Facades\GAMP', 'GAMP');
 
 $app->withEloquent();
 

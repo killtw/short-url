@@ -2,6 +2,7 @@
 
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\DatabaseTransactions;
+use Spatie\Analytics\Period;
 
 class UrlServiceTest extends TestCase
 {
@@ -95,6 +96,15 @@ class UrlServiceTest extends TestCase
     public function it_should_return_a_record_with_ga_data()
     {
         // arrange
+        $mock = $this->initMockClass(\App\Services\AnalyticService::class);
+        $mock->shouldReceive('getPageviews')
+            ->once()
+            ->withArgs(['test'])
+            ->once()
+            ->andReturn(collect([
+                'pageviews' => 64
+            ]));
+
         $target = app(\App\Services\UrlService::class);
         $target->make(new \Illuminate\Http\Request([
             'href' => 'http://test.com',

@@ -26,17 +26,23 @@ class UrlService
      * @var HashidsService
      */
     private $service;
+    /**
+     * @var AnalyticService
+     */
+    private $analytics;
 
     /**
      * UrlService constructor.
      *
      * @param Url $url
      * @param HashidsService $service
+     * @param AnalyticService $analytics
      */
-    public function __construct(Url $url, HashidsService $service)
+    public function __construct(Url $url, HashidsService $service, AnalyticService $analytics)
     {
         $this->url = $url;
         $this->service = $service;
+        $this->analytics = $analytics;
     }
 
     /**
@@ -68,7 +74,7 @@ class UrlService
      *
      * @return Url
      */
-    public function find($hash) : Url
+    public function find(string $hash) : Url
     {
         GAMP::setClientId($this->getClientId())
             ->setDocumentPath($hash)
@@ -82,30 +88,22 @@ class UrlService
     }
 
     /**
-     * @param $hash
+     * @param string $hash
      *
      * @return Collection
      */
-    public function decode($hash) : Collection
+    public function decode(string $hash) : Collection
     {
         $url = Cache::rememberForever($hash, function() use ($hash) {
             return $this->url->where('hash', $hash)->firstOrFail();
         });
-        $response = Analytics::performQuery(Period::days(3650), 'ga:pageviews', [
-            'filters' => "ga:pagePath==/{$url->hash}",
-        ]);
-        $ga = collect($response['rows'] ?? [])->transform(function (array $row) {
-            return [
-                'pageviews' => $row[0],
-            ];
-        })->flatten(1);
 
         return collect([
             'id' => $url->id,
             'hash' => $url->hash,
             'redirect' => $url->redirect,
             'ga' => [
-                'pageviews' => $ga['pageviews']
+                'pageviews' => $this->analytics->getPageviews($hash)['pageviews']
             ],
         ]);
     }
