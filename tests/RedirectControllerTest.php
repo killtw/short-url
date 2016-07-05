@@ -53,8 +53,8 @@ class RedirectControllerTest extends TestCase
         ]);
 
         $this->get('test+')
-            ->seeJson([
-                'href' => 'http://test.com',
+            ->seeJsonContains([
+                'redirect' => 'http://test.com',
                 'hash' => 'test',
             ]);
     }

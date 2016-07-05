@@ -20,7 +20,7 @@ install:
 before_script:
   - mysql -e 'create database short;'
   - if [ $TRAVIS_BRANCH = 'master' ]; then wget $SERVICE_ACCOUNT -O resources/laravel-analytics/service-account-credentials.json; fi
-  - if [ $TRAVIS_BRANCH = 'php5' ]; then wget $SERVICE_P12 -O resources/laravel-analytics/privatekey.p12; fi
+  - if [ $TRAVIS_BRANCH = 'php5' ]; then wget $SERVICE_PKEY -O resources/laravel-analytics/privatekey.p12; fi
 
 notifications:
   email:
