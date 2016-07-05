@@ -90,4 +90,37 @@ class UrlServiceTest extends TestCase
         $this->assertEquals('test', $actual->hash);
         $this->assertEquals(json_decode('{"utm_source":"facebook","utm_medium":"ads","utm_campaign":"posts"}'), $actual->utm);
     }
+
+    /** @test */
+    public function it_should_return_a_record_with_pageviews()
+    {
+        // arrange
+        $this->initMockClass(\App\Services\AnalyticService::class)
+            ->shouldReceive('getPageviews')
+            ->once()
+            ->withArgs(['test'])
+            ->once()
+            ->andReturn(collect([
+                'pageviews' => 64
+            ]));
+
+        $target = app(\App\Services\UrlService::class);
+        $target->make(new \Illuminate\Http\Request([
+            'href' => 'http://test.com',
+            'hash' => 'test',
+        ]));
+
+        // act
+        $actual = $target->decode('test');
+
+        // assert
+        $this->seeJsonStructure([
+            'id',
+            'hash',
+            'redirect',
+            'ga' => [
+                'pageviews',
+            ],
+        ], $actual);
+    }
 }
