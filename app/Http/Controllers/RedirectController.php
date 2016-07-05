@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\UrlService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 /**
  * Class RedirectController
@@ -47,10 +48,10 @@ class RedirectController extends Controller
      * @param UrlService $service
      * @param $hash
      *
-     * @return \App\Url
+     * @return Collection
      */
     public function decode(UrlService $service, $hash)
     {
-        return $service->find($hash);
+        return $service->decode($hash);
     }
 }
