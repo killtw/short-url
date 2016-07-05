@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Url;
 use Cache;
+use Illuminate\Support\Collection;
 use Irazasyed\LaravelGAMP\Facades\GAMP;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -41,15 +42,15 @@ class UrlService
     /**
      * @param Request $request
      *
-     * @return Model
+     * @return Url
      */
-    public function make(Request $request)
+    public function make(Request $request) : Url
     {
         $model = $this->url->create([
             'href' => $request->input('href'),
             'hash' => ($request->has('hash')) ?
                 $request->input('hash') :
-                $this->service->make(((isset($this->url->latest()->first()->id) ? $this->url->latest()->first()->id : 0) + 1)),
+                $this->service->make(($this->url->latest()->first()->id ?? 0) + 1),
             'utm' => ($request->has('utm.*.source')) ? [
                 'utm_source' => $request->input('utm.source', 'facebook'),
                 'utm_medium' => $request->input('utm.medium'),
@@ -67,12 +68,12 @@ class UrlService
      *
      * @return Url
      */
-    public function find($hash)
+    public function find($hash) : Url
     {
         GAMP::setClientId($this->getClientId())
             ->setDocumentPath($hash)
-            ->setUserAgentOverride(isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '')
-            ->setDocumentReferrer(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '')
+            ->setUserAgentOverride($_SERVER['HTTP_USER_AGENT'] ?? '')
+            ->setDocumentReferrer($_SERVER['HTTP_REFERER'] ?? '')
             ->sendPageview();
 
         return Cache::rememberForever($hash, function() use ($hash) {
@@ -80,34 +81,39 @@ class UrlService
         });
     }
 
-    public function decode($hash)
+    /**
+     * @param $hash
+     *
+     * @return Collection
+     */
+    public function decode($hash) : Collection
     {
         $url = Cache::rememberForever($hash, function() use ($hash) {
             return $this->url->where('hash', $hash)->firstOrFail();
         });
-        $request = Analytics::performQuery(Period::days(3650), 'ga:pageviews', [
+        $response = Analytics::performQuery(Period::days(3650), 'ga:pageviews', [
             'filters' => "ga:pagePath==/{$url->hash}",
         ]);
-        $ga = collect($request->rows)->transform(function ($row) {
+        $ga = collect($response['rows'] ?? [])->transform(function (array $row) {
             return [
                 'pageviews' => $row[0],
             ];
         })->flatten(1);
 
-        return [
+        return collect([
             'id' => $url->id,
             'hash' => $url->hash,
             'redirect' => $url->redirect,
             'ga' => [
                 'pageviews' => $ga['pageviews']
             ],
-        ];
+        ]);
     }
 
     /**
      * @return string
      */
-    protected function getClientId()
+    protected function getClientId() : string
     {
         if (isset($_COOKIE['_ga'])) {
             return substr($_COOKIE['_ga'], 6);
