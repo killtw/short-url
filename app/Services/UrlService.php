@@ -90,7 +90,7 @@ class UrlService
      *
      * @return Collection
      */
-    public function decode(string $hash)
+    public function decode($hash)
     {
         $url = Cache::rememberForever($hash, function() use ($hash) {
             return $this->url->where('hash', $hash)->firstOrFail();
