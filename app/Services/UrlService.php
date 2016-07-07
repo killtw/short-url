@@ -55,7 +55,7 @@ class UrlService
             'hash' => ($request->has('hash')) ?
                 $request->input('hash') :
                 $this->service->make(((isset($this->url->latest()->first()->id) ? $this->url->latest()->first()->id : 0) + 1)),
-            'utm' => ($request->has('utm.*.source')) ? [
+            'utm' => ($request->has('utm.*.source') and $request->input('utm.source') != null) ? [
                 'utm_source' => $request->input('utm.source', 'facebook'),
                 'utm_medium' => $request->input('utm.medium'),
                 'utm_campaign' => $request->input('utm.campaign'),
