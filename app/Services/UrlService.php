@@ -50,17 +50,20 @@ class UrlService
      */
     public function make(Request $request)
     {
+        $utm = ($request->has('utm.*.source') and $request->input('utm.source') != null) ? [
+            'utm_source' => $request->input('utm.source', 'facebook'),
+            'utm_medium' => $request->input('utm.medium'),
+            'utm_campaign' => $request->input('utm.campaign'),
+        ] : null;
+
         $model = $this->url->create([
             'href' => $request->input('href'),
             'hash' => ($request->has('hash')) ?
                 $request->input('hash') :
                 $this->service->make(((isset($this->url->latest()->first()->id) ? $this->url->latest()->first()->id : 0) + 1)),
-            'utm' => ($request->has('utm.*.source') and $request->input('utm.source') != null) ? [
-                'utm_source' => $request->input('utm.source', 'facebook'),
-                'utm_medium' => $request->input('utm.medium'),
-                'utm_campaign' => $request->input('utm.campaign'),
+            'utm' => ($request->input('utm.content') != null) ? array_merge($utm, [
                 'utm_content' => $request->input('utm.content'),
-            ] : null
+            ]) : $utm
         ]);
 
         return Cache::rememberForever($model->hash, function() use ($model) {
