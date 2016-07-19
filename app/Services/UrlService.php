@@ -59,6 +59,7 @@ class UrlService
                 'utm_source' => $request->input('utm.source', 'facebook'),
                 'utm_medium' => $request->input('utm.medium'),
                 'utm_campaign' => $request->input('utm.campaign'),
+                'utm_content' => $request->input('utm.content'),
             ] : null
         ]);
 
